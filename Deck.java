@@ -37,11 +37,13 @@ public class Deck {
         return generatedCard;
     }
 
-
-    public void newTop(){
+    public Card generate(){
         Random rand=new Random();
         int jenis = rand.nextInt(2);
-        if (jenis==0){top=generateAngka();} else {top=generatePower();}
+        if (jenis==0){return generateAngka();} else {return generatePower();}
+    }
+    public void newTop(){
+        top = generate();
     }
 }
 
