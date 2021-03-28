@@ -23,6 +23,7 @@ public class Player {
     public Card Discard(int cardOrder){
         Card discardCard = playerHand.get(cardOrder);
         playerHand.remove(discardCard);
+        
         return discardCard;
     }
 
@@ -36,6 +37,7 @@ public class Player {
 
     public void Draw(Deck deck){
         playerHand.add(deck.getTop());
+        deck.getTop().printCard();
         deck.generate();
     }
 

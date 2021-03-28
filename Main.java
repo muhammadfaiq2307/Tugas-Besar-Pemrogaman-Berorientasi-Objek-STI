@@ -23,6 +23,8 @@ public class Main {
         Deck deck = new Deck();
         System.out.println("The game has begun. The top card is currently: ");
         deck.getTop().printCard();
+        LastCard lastCard = new LastCard(deck.getTop());
+        deck.newTop();
         Random rand = new Random();
         int firstPlayer = rand.nextInt(playerList.size());
         Collections.swap(playerList,0,firstPlayer);
@@ -38,6 +40,8 @@ public class Main {
             int nextPlayerOrder = (currentPlayerOrder+1) % totalPlayers;
             currentPlayer.setGiliran(true);
             while (endTurn==false){
+                System.out.println("Current Card:");
+                lastCard.getTop().printCard();
                 System.out.println("What will "+currentPlayer.getName()+" do?");
                 //check kartu deck sama kartu pemain dulu
                 showIngameMenu();
@@ -48,6 +52,10 @@ public class Main {
                         currentPlayer.showDeck();
                         break;
                     case 2:
+                        System.out.println("Mau ngeluarin yg mana lur");
+                        int keluarin = input.nextInt();
+                        Card kartuKeluarin = currentPlayer.Discard(keluarin-1);
+                        lastCard.setTop(kartuKeluarin);
                         break;
                     case 3:
                         currentPlayer.Draw(deck);

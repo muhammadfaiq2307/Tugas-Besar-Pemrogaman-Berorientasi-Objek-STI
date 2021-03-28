@@ -8,5 +8,9 @@ public class LastCard {
 	public Card getTop(){
 		return top;
 	}
+
+	public void setTop(Card top){
+		this.top = top;
+	}
     
 }
