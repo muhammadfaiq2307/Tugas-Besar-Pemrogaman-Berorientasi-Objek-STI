@@ -34,12 +34,27 @@ public class Main {
         for (Player player: playerList){
             System.out.println(player.getName());
         }
-        while (isVictory==false){
+        // Default Values
+        int skipCards=0;
+        int playerRotateDirection=1;
+        int nextPlayerOrder;
+        while (!isVictory){
             boolean endTurn=false;
             Player currentPlayer=playerList.get(currentPlayerOrder);
-            int nextPlayerOrder = (currentPlayerOrder+1) % totalPlayers;
+            skipCards=0;
+            System.out.println("Skip: "+skipCards+", Reverse: "+playerRotateDirection+", CurrOrder: "+currentPlayerOrder);
+            if (playerRotateDirection==1){
+                nextPlayerOrder = (currentPlayerOrder+1) % totalPlayers;
+            }
+            else {
+                nextPlayerOrder = (currentPlayerOrder-1);
+                if (nextPlayerOrder==-1){
+                    nextPlayerOrder=totalPlayers-1;
+                }
+
+            }
             currentPlayer.setGiliran(true);
-            while (endTurn==false){
+            while (!endTurn){
                 System.out.println("Current Card:");
                 lastCard.getTop().printCard();
                 System.out.println("What will "+currentPlayer.getName()+" do?");
@@ -52,7 +67,8 @@ public class Main {
                         currentPlayer.showDeck();
                         break;
                     case 2:
-                        System.out.println("Mau ngeluarin yg mana lur");
+                        currentPlayer.showDeck();
+                        System.out.print("Mau ngeluarin yg mana lur?: ");
                         int keluarin = input.nextInt();
                         Card kartuKeluarin = currentPlayer.Discard(keluarin-1);
                         lastCard.setTop(kartuKeluarin);
@@ -83,13 +99,39 @@ public class Main {
                     case 7:
                         System.out.println("kontol lah");
                         break;
+                    case 8:
+                        System.out.print("Enter number of cards: ");
+                        skipCards= input.nextInt();
+                        endTurn=true;
+                        break;
+                    case 9:
+                        System.out.print("Enter number of cards: ");
+                        int revCards=input.nextInt();
+                        if (revCards%2==1){
+                            playerRotateDirection*=-1;
+                        }
+                        endTurn=true;
+                        break;
                     case 0:
                         endTurn=true;
                         break;
                 }
             }
-
-            currentPlayerOrder = nextPlayerOrder;
+            if (playerRotateDirection==1){
+                currentPlayerOrder = (nextPlayerOrder+(skipCards))% totalPlayers;
+            }
+            else {
+                nextPlayerOrder=currentPlayerOrder-skipCards-1;
+                if (nextPlayerOrder<0){
+                    int negativeOverflow = nextPlayerOrder;
+                    System.out.println(negativeOverflow);
+                    currentPlayerOrder = totalPlayers-((negativeOverflow*-1)%totalPlayers);
+                }
+                else {
+                    currentPlayerOrder=nextPlayerOrder;
+                }
+            }
+            System.out.println(currentPlayerOrder);
             currentPlayer.setGiliran(false);
 //            if (currentPlayerOrder==5){
 //                isVictory=true;
@@ -105,5 +147,7 @@ public class Main {
         System.out.println("5. List Players");
         System.out.println("6. View Player in Turn");
         System.out.println("7. Help");
+        System.out.println("8. <DEBUG> Skip");
+        System.out.println("9. <DEBUG> Reverse");
     }
 }

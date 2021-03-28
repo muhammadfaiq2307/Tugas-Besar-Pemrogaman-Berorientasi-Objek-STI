@@ -5,14 +5,19 @@ public class PowCard implements Card{
 	public PowCard(String color, String power){
 		this.color = color;
 		this.power = power;
-	}	
+	}
 
 	public String getColor(){
 		return color;
 	}
-	
+
 	public String getPower(){
 		return power;
+	}
+
+	// Temporary
+	public int getNumber(){
+		return -1;
 	}
 
     public void printCard() {

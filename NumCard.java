@@ -8,6 +8,10 @@ public class NumCard implements Card{
 		this.color = color;
 		this.number = number;
 	}
+	// Temporary
+	public String getPower(){
+		return "";
+	}
 
 	public String getColor(){
 		return color;
