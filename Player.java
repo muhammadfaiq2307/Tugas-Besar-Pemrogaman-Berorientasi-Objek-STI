@@ -57,4 +57,42 @@ public class Player {
         }
     }
 
+    public boolean checkPlayerHandNumCard(Card lastCard){
+        boolean found=false;
+        for (int i=0;i<playerHand.size();i++){
+            Card card = playerHand.get(i);
+            if(card.getColor()==lastCard.getColor() || card.getNumber()==lastCard.getNumber()){
+                found=true;
+                break;
+            }
+        }
+        return found;
+    }
+
+    public boolean checkPlayerHandPowCard(Card lastCard){
+        boolean found = false;
+        for (int i=0;i<playerHand.size();i++){
+            Card card = playerHand.get(i);
+            if(card.getColor()==lastCard.getColor() || card.getPower()==lastCard.getPower()){
+                found=true;
+                break;
+            }
+        }
+        return found;
+    }
+
+    public boolean PowCheck(String type){
+        boolean found = false;
+        for (int i=0;i<playerHand.size();i++){
+            Card card = playerHand.get(i);
+            if(card.getPower()==type){
+                found=true;
+                break;
+            }
+        }
+        return found;
+
+
+
+}
 }
