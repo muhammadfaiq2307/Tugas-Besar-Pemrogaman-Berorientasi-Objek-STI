@@ -1,49 +1,114 @@
-import java.util.Random;
+/**
+ * Deck mengikuti link berikut
+ * https://en.wikipedia.org/wiki/Uno_(card_game)#/media/File:UNO_cards_deck.svg
+ */
+
+import java.util.*;
+
 public class Deck {
-	private Card top;
-	
+    private List<Card> deck = new ArrayList<Card>();
+    private List<Card> discardDeck = new ArrayList<Card>();
+    private final List<String> listColor = new ArrayList<String>();
+    private final List<String> listAction = new ArrayList<String>();
+    private final List<String> listWild = new ArrayList<String>();
+    private Random random;
+
     public Deck(){
-        top = generateAngka();
-	}
+        random = new Random();
+        createCards();
+        shuffle();
+    }
 
-	public Card getTop(){
-		return top;
-	}
+    private void createCards(){
+        createListColor();
+        createListAction();
+        createListWild();
+        createNumCards();
+        createActionCards();
+        createWildCards();
+    }
+
+    private void createListColor(){
+        listColor.add("Red");
+        listColor.add("Yellow");
+        listColor.add("Green");
+        listColor.add("Blue");
+    }
+
+    private void createListAction(){
+        listAction.add("Skip");
+        listAction.add("Reverse");
+        listAction.add("Draw 2");
+    }
     
-    public Card generateAngka(){
-        Random rand=new Random();
-        int banyakAngka = 10;
-        int banyakWarna = 4;
-        int angka = rand.nextInt(banyakAngka);
-        int warna = rand.nextInt(banyakWarna);
-        String color;
-        if (warna==0){color="Red";} else if (warna==1){color="Green";} else if (warna==2){color="Blue";} else {color="Yellow";}
-        int number = angka;
-        Card generatedCard = new NumCard(color, number);
-        return generatedCard;
+    private void createListWild(){
+        listWild.add("Wild Draw 4");
+        listWild.add("Wild Color");
     }
 
-    public Card generatePower(){
-        Random rand=new Random();
-        int banyakPower = 3;
-        int banyakWarna = 4;
-        int pow = rand.nextInt(banyakPower);
-        int warna = rand.nextInt(banyakWarna);
-        String power;
-        String color;
-        if (pow==0){power="Skip";} else if (pow==1){power="Reverse";} else {power="PlusTwo";}
-        if (warna==0){color="Red";} else if (warna==1){color="Green";} else if (warna==2){color="Blue";} else {color="Yellow";}
-        Card generatedCard = new PowCard(color, power);
-        return generatedCard;
+    private void createNumCards(){
+        for (String color : listColor){
+            deck.add(new NumCard(color, 0));
+
+            for (int i = 1; i <= 9; i++){
+                deck.add(new NumCard(color, i));
+            }
+        }
     }
 
-    public Card generate(){
-        Random rand=new Random();
-        int jenis = rand.nextInt(2);
-        if (jenis==0){return generateAngka();} else {return generatePower();}
+    private void createActionCards(){
+        for (String color : listColor){
+            for (String power : listAction){
+                for (int i=0; i < 2; i++){
+                    deck.add(new ActionCard(color, power));
+                }
+            }
+        }
     }
-    public void newTop(){
-        top = generate();
+
+    private void createWildCards(){
+        for (String power : listWild){
+            for (int i=0; i < 4; i++){
+                deck.add(new WildCard("Black", power));
+            }
+        }
+    }
+
+    public void shuffle(){
+        for (int i = 0; i < deck.size(); i++) {
+            int x = random.nextInt(deck.size());
+            int y = random.nextInt(deck.size());
+            Card temp = deck.get(x);
+            deck.set(x,deck.get(y));
+            deck.set(y,temp);
+        }
+    }
+
+    public boolean isDeckEmpty(){
+        return (deck.size() == 0);
+    }
+
+    //untuk mengambil 1 kartu dari deck.
+    public Card getTop() {
+        if (deck.size()==0){
+//            throw new Exception();
+        }
+        return deck.remove(0);
+    }
+
+    //kumpulan kartu yang telah dikeluarkan pemain.
+    public void discardDeck(Card discardCard){
+        discardDeck.add(discardCard);
+    }
+
+    public List<Card> getDiscardedDeck(){
+        return discardDeck;
+    }
+
+    //membuat ulang deck dari discardedDeck saat deck.size()==0.
+    public void refillDeck(){
+        deck.addAll(discardDeck);
+        discardDeck.clear();
+        shuffle();
     }
 }
-

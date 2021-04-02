@@ -3,7 +3,7 @@
 public class NumCard implements Card{
 	private String color;
 	private int number;
-	
+
 	public NumCard(String color, int number){
 		this.color = color;
 		this.number = number;
@@ -19,6 +19,10 @@ public class NumCard implements Card{
 
 	public int getNumber(){
 		return number;
+	}
+
+	public void setColor(String color){
+		this.color=color;
 	}
 
 	public void printCard() {

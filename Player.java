@@ -1,11 +1,18 @@
 import java.util.*;
 public class Player {
     private boolean isGiliran=false;
+//    private boolean gagaldiscard=false;
     private List<Card> playerHand = new ArrayList<Card>();
     private String name;
+    private String color;
 
-    public Player(String name){
+    public Player(String name, String playerColor){
         this.name=name;
+        this.color=playerColor;
+        generatePlayerDeck();
+    }
+
+    public void generatePlayerDeck(){
         Random rand=new Random();
         int banyakAngka = 10;
         int banyakWarna = 4;
@@ -13,18 +20,38 @@ public class Player {
             int angka = rand.nextInt(banyakAngka);
             int warna = rand.nextInt(banyakWarna);
             String color;
-            if (warna==0){color="Red";} else if (warna==1){color="Green";} else if (warna==2){color="Blue";} else {color="Yellow";}
+
+            if (warna==0) color="Red";
+            else if (warna==1) color="Green";
+            else if (warna==2) color="Blue";
+            else color="Yellow";
+
             int number = angka;
             Card nextCard = new NumCard(color, number);
             playerHand.add(nextCard);
         }
-
     }
-    public Card Discard(int cardOrder){
+    public Card discard(int cardOrder) {
         Card discardCard = playerHand.get(cardOrder);
         playerHand.remove(discardCard);
-        
-        return discardCard;
+        //cek warna kartu
+//        if (discardCard.getColor()== lastCard.getColor()) {
+//            playerHand.remove(discardCard);
+//        }
+//        //cek nomor kartu
+//        else if (discardCard.getNumber() == lastCard.getNumber()) {
+//            playerHand.remove(discardCard);
+//        }
+//        //belum bikin kasus power
+//        else {
+//            System.out.println("Kartu tidak sesuai. Keluarkan kartu lain.");
+//            this.gagaldiscard = true;
+//        }
+
+        return (discardCard);
+    }
+    public Card checkHand(int cardOrder){
+        return playerHand.get(cardOrder);
     }
 
     public void setGiliran(boolean giliran){
@@ -35,14 +62,18 @@ public class Player {
         return isGiliran;
     }
 
-    public void Draw(Deck deck){
-        playerHand.add(deck.getTop());
-        deck.getTop().printCard();
-        deck.generate();
+    public void draw(Deck deck){
+//        try {
+            playerHand.add(deck.getTop());
+            deck.shuffle();
+//        }
+//        catch (Exception e) {
+//            System.out.println(e);
+//        }
     }
 
     public String getName(){
-        return name;
+        return color+name+Card.Reset;
     }
 
     public int getRemainingCards(){
@@ -57,42 +88,23 @@ public class Player {
         }
     }
 
-    public boolean checkPlayerHandNumCard(Card lastCard){
-        boolean found=false;
-        for (int i=0;i<playerHand.size();i++){
-            Card card = playerHand.get(i);
-            if(card.getColor()==lastCard.getColor() || card.getNumber()==lastCard.getNumber()){
-                found=true;
-                break;
-            }
-        }
-        return found;
+    public List<Card> getPlayerHand(){
+        return playerHand;
     }
 
-    public boolean checkPlayerHandPowCard(Card lastCard){
-        boolean found = false;
-        for (int i=0;i<playerHand.size();i++){
-            Card card = playerHand.get(i);
-            if(card.getColor()==lastCard.getColor() || card.getPower()==lastCard.getPower()){
-                found=true;
-                break;
-            }
+    public void declareHiji(Deck deck) throws Exception{
+        if (getRemainingCards()==1){
+            System.out.print(Card.Red+"H ");
+            System.out.print(Card.Green+"I ");
+            System.out.print(Card.Yellow+"J ");
+            System.out.print(Card.Blue+"I ");
+            System.out.print(Card.Cyan+"has been declared ");
+            System.out.println("by "+getName()+Card.Reset+"!");
         }
-        return found;
+        else {
+            System.out.print(Card.Red+"Whoops, you still have more than 1 card left! ");
+            System.out.println(Card.Cyan+"Only declare HIJI when you have 1 card left."+Card.Reset);
+            throw new Exception("IllegalDeclaration");
+        }
     }
-
-    public boolean PowCheck(String type){
-        boolean found = false;
-        for (int i=0;i<playerHand.size();i++){
-            Card card = playerHand.get(i);
-            if(card.getPower()==type){
-                found=true;
-                break;
-            }
-        }
-        return found;
-
-
-
-}
 }
