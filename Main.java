@@ -58,7 +58,9 @@ public class Main {
         System.out.println();
         System.out.println("The game has begun!");
         LastCard lastCard = new LastCard(deck.getFirstCard());
-        System.out.print("The first card is: "+lastCard.getTop());
+        System.out.print("The first card is: ");
+        lastCard.getTop().printCard();
+
         // Randomize first player
         int firstPlayer = rand.nextInt(playerList.size());
         Collections.swap(playerList,0,firstPlayer);
@@ -85,7 +87,6 @@ public class Main {
 
             // Hiji Flag
             HijiTimer hijiTimer = new HijiTimer(currentPlayer,deck);
-            HijiThread hijiThread = new HijiThread(currentPlayer,deck,hijiTimer);
             boolean isPlayerHiji=false;
 
             // For "View player in turn" command.
@@ -101,12 +102,22 @@ public class Main {
 
             // Bring up command until turn ends (discard).
             while (!endTurn){
+                // Exit measure
+                if (isPlayerHiji && !hijiTimer.isAlive()) {
+                    endTurn=true;
+                    break;
+                }
                 System.out.println("Current Card:");
                 lastCard.getTop().printCard();
                 System.out.println("What will "+currentPlayer.getName()+" do?");
                 showIngameMenu();
                 int playerCommand = input.nextInt();
 
+                // Safety exit measure
+                if (isPlayerHiji && !hijiTimer.isAlive()) {
+                    endTurn=true;
+                    break;
+                }
                 // Menu list:
                 switch (playerCommand) {
 
@@ -164,13 +175,7 @@ public class Main {
                             // Eligible for HIJI
                             isPlayerHiji=(currentPlayer.getRemainingCards()==1);
                             if (isPlayerHiji){
-//                            hijiThread = new HijiThread(currentPlayer,deck,hijiTimer);
-                                hijiThread.start();
-//                            System.out.println(currentPlayer);
-//                            System.out.println("Test Hello");
-//                            endTurn=true;
-//                            System.out.println("Test Case");
-                            // TIDAK di end turn disini sampe timernya kelar/declare hiji!
+                                hijiTimer.start();
                                 break;
                             }
                             endTurn=true;
@@ -202,7 +207,7 @@ public class Main {
                                 System.out.print("Mau ngeluarin yg mana lur?: ");
                                 keluarin = input.nextInt();
                                 checkHand = currentPlayer.checkHand(keluarin-1);
-                                while (!isStackable(checkHand, discardedCard)){
+                                while (!(checkHand.getNumber()==discardedCard.getNumber() && checkHand.getPower().equals(discardedCard.getPower()))){
                                     System.out.println("Whoops can't discard this");
                                     System.out.print("Mau ngeluarin yg mana lur?: ");
                                     keluarin = input.nextInt();
@@ -246,13 +251,7 @@ public class Main {
                         // Eligible for HIJI
                         isPlayerHiji=(currentPlayer.getRemainingCards()==1);
                         if (isPlayerHiji){
-//                            hijiThread = new HijiThread(currentPlayer,deck,hijiTimer);
-                            hijiThread.start();
-//                            System.out.println(currentPlayer);
-//                            System.out.println("Test Hello");
-//                            endTurn=true;
-//                            System.out.println("Test Case");
-                            // TIDAK di end turn disini sampe timernya kelar/declare hiji!
+                            hijiTimer.start();
                             break;
                         }
                         endTurn=true;
@@ -261,7 +260,8 @@ public class Main {
                     // Draw
                     case 3:
                         if (draw2Stacks>0) {
-                            System.out.println("Sorry you must draw");
+                            System.out.println("Sorry, you must draw.");
+                            System.out.println("Drew "+Card.Red+draw2Stacks*2+" cards."+Card.Reset);
                             for (int i=0;i<draw2Stacks;i++){
                                 currentPlayer.draw(deck);
                                 currentPlayer.draw(deck);
@@ -271,7 +271,8 @@ public class Main {
                             break;
                         }
                         if (draw4>0) {
-                            System.out.println("Sorry you must draw");
+                            System.out.println("Sorry, you must draw.");
+                            System.out.println("Drew +"+Card.Red+draw4+" cards.");
                             for (int i=0;i<draw4;i++){
                                 currentPlayer.draw(deck);
                                 currentPlayer.draw(deck);
@@ -331,8 +332,7 @@ public class Main {
                     case 4:
                         // Interrupt timer if player successfully declared HIJI before 3 seconds
                         if (isPlayerHiji && hijiTimer.isAlive()) {
-                            hijiThread.interruptTimer();
-                            endTurn = true;
+                            hijiTimer.interrupt();
                         }
                         try {
                             currentPlayer.declareHiji(deck);
@@ -340,6 +340,7 @@ public class Main {
                         catch (Exception e) {
                             hijiRuleViolation(currentPlayer,deck);
                         }
+                        endTurn=true;
                         break;
 
                     // List Players
@@ -485,6 +486,7 @@ public class Main {
                 System.out.println(player.getName()+" did not declare "+Card.Red+"HIJI!");
                 hijiRuleViolation(player,deck);
                 System.out.println("Don't forget to declare "+Card.Red+"HIJI"+Card.Reset+"!");
+                System.out.println("Input any number to end your turn...");
             }
             catch (InterruptedException e){
 
@@ -492,32 +494,6 @@ public class Main {
         }
     }
 
-    private static class HijiThread extends Thread {
-        Player player;
-        Deck deck;
-        HijiTimer hijiTimer;
-
-        public HijiThread(Player player, Deck deck, HijiTimer hijiTimer) {
-            this.player=player;
-            this.deck=deck;
-            this.hijiTimer=hijiTimer;
-        }
-
-        public void interruptTimer() {
-            hijiTimer.interrupt();
-        }
-
-        @Override
-        public void run() {
-            super.run();
-            try {
-                hijiTimer.start();
-                hijiTimer.join();
-            } catch (Exception e) {
-
-            }
-        }
-    }
 
     // Check if selected card stackable with current last card
     public static boolean isStackable(Card selectedCard, Card cardBefore) {
