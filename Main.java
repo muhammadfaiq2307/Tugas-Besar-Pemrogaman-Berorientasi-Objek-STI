@@ -202,7 +202,7 @@ public class Main {
                                 System.out.print("Mau ngeluarin yg mana lur?: ");
                                 keluarin = input.nextInt();
                                 checkHand = currentPlayer.checkHand(keluarin-1);
-                                while (!isStackable(checkHand, discardedCard)){
+                                while (!(checkHand.getNumber()==discardedCard.getNumber() && checkHand.getPower().equals(discardedCard.getPower()))){
                                     System.out.println("Whoops can't discard this");
                                     System.out.print("Mau ngeluarin yg mana lur?: ");
                                     keluarin = input.nextInt();
