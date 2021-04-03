@@ -322,6 +322,12 @@ public class Main {
                                     chooseColor=false;
                                 }
                                 lastCard.setTop(discardedCard);
+                                //checkuno
+                                isPlayerHiji=(currentPlayer.getRemainingCards()==1);
+                                if (isPlayerHiji){
+                                    hijiTimer.start();
+                                    break;
+                                }
                             }
                         }
                         deck.shuffle();
