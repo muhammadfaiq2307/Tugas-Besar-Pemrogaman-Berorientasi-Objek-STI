@@ -183,8 +183,11 @@ public class Main {
                         }
                         //normal discard
                         currentPlayer.showDeck();
-                        System.out.println("Mau ngeluarin yg mana lur?: ");
+                        System.out.println("Mau ngeluarin yg mana lur? Ketik -1 to cancel");
                         int keluarin = input.nextInt();
+                        if(keluarin==-1){
+                            break;
+                        }
                         Card checkHand = currentPlayer.checkHand(keluarin-1);
                         while (!isStackable(checkHand, lastCard.getTop())){
                             System.out.println("Whoops can't discard this");
@@ -558,8 +561,7 @@ public class Main {
 
     //Check type of selected card
     public static String checkCard(Card selectedCard) {
-        int checker =selectedCard.getProperty();
-        if (checker==-1){
+        if (selectedCard.getProperty() instanceof Integer){
             if (selectedCard.getColor().equals("Black")) return "WildCard";
             else return "ActionCard";
         }

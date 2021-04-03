@@ -1,9 +1,9 @@
 //Wild Card, kartu tanpa syarat
 
-public class WildCard extends PowCard{
+public class WildCard<Property> extends PowCard{
 	private String color;
-	private String power;
-	public WildCard(String color, String power){
+	private Property power;
+	public WildCard(String color, Property power){
 		super(color, power);
 		this.color=color;
 		this.power=power;
@@ -17,7 +17,9 @@ public class WildCard extends PowCard{
 		return color;
 	}
 
-	public String getPower(){
+
+	@Override
+	public Property getProperty() {
 		return power;
 	}
 

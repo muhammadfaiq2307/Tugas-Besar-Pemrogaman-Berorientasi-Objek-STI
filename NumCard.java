@@ -18,8 +18,8 @@ public class NumCard<Property> implements Card{
 	}
 
 	@Override
-	public <Property> Property getProperty() {
-		return (Property) number;
+	public  Property getProperty() {
+		return number;
 	}
 
 	public void setColor(String color){
