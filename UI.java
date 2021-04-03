@@ -14,6 +14,7 @@ public class UI {
 
         System.out.println(Card.Blue+"      << WELCOME TO HIJI GAME >>");
         System.out.println("         ===================="+Card.Reset);
+        System.out.println(Card.Red+"Enter 1 to start..."+Card.Reset);
     }
 
     public static void showIngameMenu(){

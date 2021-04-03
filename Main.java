@@ -1,13 +1,20 @@
 import java.util.*;
 public class Main {
     public static void main (String[] args){
+        Scanner input = new Scanner(System.in);
         UI.titleScreen();
+        int startGame = input.nextInt();
+        while (startGame!=1){
+            System.out.println("Please input the right number!");
+            startGame = input.nextInt();
+        }
+
 
         // Global variables
         List<Player> playerList = new ArrayList<Player>();
         boolean isVictory=false;
         int currentPlayerOrder=0;
-        Scanner input = new Scanner(System.in);
+
         Deck deck = new Deck();
         Random rand = new Random();
         int skipCards;
@@ -18,6 +25,8 @@ public class Main {
         boolean chooseColor;
         Player winner = new Player("placeholder","placeholder");
         String[] playerColors = {Card.Blue,Card.Red,Card.Green,Card.Cyan,Card.Purple,Card.Yellow};
+
+
 
         // Total players
         System.out.println("Enter the number of players (2-6):");
