@@ -183,11 +183,8 @@ public class Main {
                         }
                         //normal discard
                         currentPlayer.showDeck();
-                        System.out.println("Mau ngeluarin yg mana lur? Ketik -1 to cancel");
+                        System.out.println("Mau ngeluarin yg mana lur?: ");
                         int keluarin = input.nextInt();
-                        if(keluarin==-1){
-                            break;
-                        }
                         Card checkHand = currentPlayer.checkHand(keluarin-1);
                         while (!isStackable(checkHand, lastCard.getTop())){
                             System.out.println("Whoops can't discard this");
