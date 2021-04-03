@@ -6,17 +6,21 @@
 import java.util.*;
 
 public class Deck {
-    private List<Card> deck = new ArrayList<Card>();
-    private List<Card> discardDeck = new ArrayList<Card>();
+    private final List<Card> deck = new ArrayList<Card>();
+    private final List<Card> discardDeck = new ArrayList<Card>();
     private final List<String> listColor = new ArrayList<String>();
     private final List<String> listAction = new ArrayList<String>();
     private final List<String> listWild = new ArrayList<String>();
-    private Random random;
+    private Card firstCard;
+    private final Random random;
 
     public Deck(){
         random = new Random();
         createCards();
         shuffle();
+        int nColors = random.nextInt(listColor.size());
+        int numbers = random.nextInt(9);
+        firstCard = new NumCard(listColor.get(nColors),numbers);
     }
 
     private void createCards(){
@@ -82,6 +86,10 @@ public class Deck {
             deck.set(x,deck.get(y));
             deck.set(y,temp);
         }
+    }
+
+    public Card getFirstCard(){
+        return firstCard;
     }
 
     public boolean isDeckEmpty(){

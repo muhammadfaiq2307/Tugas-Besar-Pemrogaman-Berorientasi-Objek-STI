@@ -29,6 +29,8 @@ public class Main {
         int draw2Stacks=0;
         boolean nextDraw4=false;
         boolean chooseColor;
+        Player winner = new Player("placeholder","placeholder");
+
         String[] playerColors = {Card.Blue,Card.Red,Card.Green,Card.Cyan,Card.Purple,Card.Yellow};
 
         
@@ -53,11 +55,10 @@ public class Main {
         }
 
         // Game start!
-        System.out.println("The game has begun. The top card is currently: ");
-        deck.getTop().printCard();
-        LastCard lastCard = new LastCard(deck.getTop());
-        deck.shuffle();
-
+        System.out.println();
+        System.out.println("The game has begun!");
+        LastCard lastCard = new LastCard(deck.getFirstCard());
+        System.out.print("The first card is: "+lastCard.getTop());
         // Randomize first player
         int firstPlayer = rand.nextInt(playerList.size());
         Collections.swap(playerList,0,firstPlayer);
@@ -100,6 +101,7 @@ public class Main {
 
             // Hiji Flag
             HijiTimer hijiTimer = new HijiTimer(currentPlayer,deck);
+            HijiThread hijiThread = new HijiThread(currentPlayer,deck,hijiTimer);
             boolean isPlayerHiji=false;
 
             // For "View player in turn" command.
@@ -136,12 +138,12 @@ public class Main {
                         System.out.print("Mau ngeluarin yg mana lur?: ");
                         int keluarin = input.nextInt();
                         Card checkHand = currentPlayer.checkHand(keluarin-1);
-                        while (!isStackable(checkHand, lastCard.getTop())){
-                            System.out.println("Whoops can't discard this");
-                            System.out.print("Mau ngeluarin yg mana lur?: ");
-                            keluarin = input.nextInt();
-                            checkHand = currentPlayer.checkHand(keluarin-1);
-                        }
+//                        while (!isStackable(checkHand, lastCard.getTop())){
+//                            System.out.println("Whoops can't discard this");
+//                            System.out.print("Mau ngeluarin yg mana lur?: ");
+//                            keluarin = input.nextInt();
+//                            checkHand = currentPlayer.checkHand(keluarin-1);
+//                        }
                         Card discardedCard = currentPlayer.discard(keluarin - 1);
                         if (discardedCard.getNumber()==-1){
                             String currentCardPower = discardedCard.getPower();
@@ -175,7 +177,12 @@ public class Main {
                         // Eligible for HIJI
                         isPlayerHiji=(currentPlayer.getRemainingCards()==1);
                         if (isPlayerHiji){
-                            hijiTimer.start();
+//                            hijiThread = new HijiThread(currentPlayer,deck,hijiTimer);
+                            hijiThread.start();
+//                            System.out.println(currentPlayer);
+//                            System.out.println("Test Hello");
+//                            endTurn=true;
+//                            System.out.println("Test Case");
                             // TIDAK di end turn disini sampe timernya kelar/declare hiji!
                         }
                         break;
@@ -190,7 +197,7 @@ public class Main {
                     case 4:
                         // Interrupt timer if player successfully declared HIJI before 3 seconds
                         if (isPlayerHiji && hijiTimer.isAlive()) {
-                            hijiTimer.interrupt();
+                            hijiThread.interruptTimer();
                             endTurn = true;
                         }
                         try {
@@ -281,8 +288,11 @@ public class Main {
             currentPlayer.setGiliran(false);
             if (currentPlayer.getRemainingCards()==0){
                 isVictory=true;
+                winner=currentPlayer;
             }
         }
+
+        showVictoryScreen(winner);
     }
     
     private static void showIngameMenu(){
@@ -314,6 +324,21 @@ public class Main {
         System.out.println("4. "+Card.Yellow+"Yellow"+Card.Reset);
     }
 
+    private static void showVictoryScreen(Player player){
+        System.out.println(Card.Red +" '  "+Card.Yellow+"`  "+Card.Blue+".                        `            "+Card.Red+" .   "+Card.Cyan+"'      . /");
+        System.out.println(Card.Blue+" \\ "+Card.Cyan+"'"+"   /"+"  ."+Card.Red +"  '              "+"` "+Card.Purple+"  .                 ' "+Card.Yellow+" \\"+Card.Blue+" /   `   ");
+        System.out.println(Card.Cyan+"  // '"+Card.Red +" `     "+Card.Cyan+".  ` "+Card.Red +"       `                "+" /          '"+" ` \\\\ "+Card.Cyan+"/   "+Card.Red+".  ");
+        System.out.println(Card.Cyan+"   ` "+Card.Blue+". "+" _     _  ___   __    _  __    _  _______  ______ "+Card.Blue+"  . "+Card.Yellow+" '");
+        System.out.println(Card.Yellow+"    ' "+" | | _ | ||   | |  |  | ||  |  | ||       ||    _ |    "+Card.Purple+"`  . ");
+        System.out.println(Card.Purple+" .    "+" | || || ||   | |   |_| ||   |_| ||    ___||   | ||  "+"/"+Card.Yellow+"  '");
+        System.out.println(Card.Cyan+"    . "+" |       ||   | |       ||       ||   |___ |   |_||_   ");
+        System.out.println(Card.Yellow+"   / "+"  |       ||   | |  _    ||  _    ||    ___||    __  |   "+Card.Yellow+"."+Card.Blue+"   '");
+        System.out.println(Card.Blue+" '  "+"   |   _   ||   | | | |   || | |   ||   |___ |   |  | |"+Card.Blue+" `");
+        System.out.println(" `"+Card.Red +"   . "+"|__| |__||___| |_|  |__||_|  |__||_______||___|  |_|  ' "+Card.Purple+" .");
+        System.out.println(Card.Blue+" ."+Card.Purple+" \\\\ "+Card.Yellow+" '             '                                   "+Card.Cyan+"  // "+Card.Blue+"' "+Card.Reset);
+        System.out.println("         ======================"+player.getName()+"======================");
+    }
+
     private static class HijiTimer extends Thread {
         Player player;
         Deck deck;
@@ -331,6 +356,33 @@ public class Main {
                 System.out.println("Don't forget to declare "+Card.Red+"HIJI"+Card.Reset+"!");
             }
             catch (InterruptedException e){
+
+            }
+        }
+    }
+
+    private static class HijiThread extends Thread {
+        Player player;
+        Deck deck;
+        HijiTimer hijiTimer;
+
+        public HijiThread(Player player, Deck deck, HijiTimer hijiTimer) {
+            this.player=player;
+            this.deck=deck;
+            this.hijiTimer=hijiTimer;
+        }
+
+        public void interruptTimer() {
+            hijiTimer.interrupt();
+        }
+
+        @Override
+        public void run() {
+            super.run();
+            try {
+                hijiTimer.start();
+                hijiTimer.join();
+            } catch (Exception e) {
 
             }
         }
