@@ -1,8 +1,8 @@
-public class PowCard implements Card{
+public class PowCard<Property> implements Card{
 	private String color;
-	private String power;
+	private Property power;
 
-	public PowCard(String color, String power){
+	public PowCard(String color, Property power){
 		this.color = color;
 		this.power = power;
 	}
@@ -11,17 +11,14 @@ public class PowCard implements Card{
 		return color;
 	}
 
-	public String getPower(){
-		return power;
-	}
 
 	public void setColor(String color){
 		this.color=color;
 	}
 
-	// Temporary
-	public int getNumber(){
-		return -1;
+	@Override
+	public <Property> Property getProperty() {
+		return (Property) power;
 	}
 
 	public void printCard() {

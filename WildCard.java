@@ -21,9 +21,8 @@ public class WildCard extends PowCard{
 		return power;
 	}
 
+	@Override
 	public void printCard(){
-		//			default :
-		//				System.out.print(Black);break;
 		switch (color) {
 			case "Red" : System.out.print(Red);break;
 			case "Blue" : System.out.print(Blue);break;

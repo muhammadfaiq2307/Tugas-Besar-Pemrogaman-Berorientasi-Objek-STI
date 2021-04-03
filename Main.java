@@ -204,7 +204,7 @@ public class Main {
                                 System.out.print("Mau ngeluarin yg mana lur?: ");
                                 keluarin = input.nextInt();
                                 checkHand = currentPlayer.checkHand(keluarin-1);
-                                while (!(checkHand.getNumber()==discardedCard.getNumber() && checkHand.getPower().equals(discardedCard.getPower()))){
+                                while (!(checkHand.getProperty()==discardedCard.getProperty() && checkHand.getProperty().equals(discardedCard.getProperty()))){
                                     System.out.println("Whoops can't discard this");
                                     System.out.print("Mau ngeluarin yg mana lur?: ");
                                     keluarin = input.nextInt();
@@ -216,8 +216,8 @@ public class Main {
                                 break;
                             }
                         }
-                        if (discardedCard.getNumber()==-1){
-                            String currentCardPower = discardedCard.getPower();
+                        if (discardedCard.getProperty() instanceof String){
+                            String currentCardPower = discardedCard.getProperty();
 
                             switch (currentCardPower) {
                                 case "Skip" : skipCards = timesDiscard;break;
@@ -269,7 +269,7 @@ public class Main {
                         }
                         if (draw4>0) {
                             System.out.println("Sorry, you must draw.");
-                            System.out.println("Drew +"+Card.Red+draw4+" cards.");
+                            System.out.println("Drew +"+Card.Red+draw4*4+" cards.");
                             for (int i=0;i<draw4;i++){
                                 currentPlayer.draw(deck);
                                 currentPlayer.draw(deck);
@@ -291,8 +291,8 @@ public class Main {
                             int pilihan = input.nextInt();
                             if (pilihan == 1) {
                                 discardedCard = currentPlayer.discard(currentPlayer.getRemainingCards()-1);
-                                if (discardedCard.getNumber()==-1){
-                                    String currentCardPower = discardedCard.getPower();
+                                if (discardedCard.getProperty() instanceof String){
+                                    String currentCardPower = discardedCard.getProperty();
         
                                     switch (currentCardPower) {
                                         case "Skip" : skipCards++;break;
@@ -319,7 +319,6 @@ public class Main {
                                     chooseColor=false;
                                 }
                                 lastCard.setTop(discardedCard);
-                                //checkuno
                                 isPlayerHiji=(currentPlayer.getRemainingCards()==1);
                                 if (isPlayerHiji){
                                     hijiTimer.start();
@@ -369,7 +368,7 @@ public class Main {
 
                     // Help
                     case 7:
-                        System.out.println("Help");
+                        showHelp();
                         break;
 
                     // Debug: Skip
@@ -474,6 +473,32 @@ public class Main {
         System.out.println("         ======================"+player.getName()+"======================");
     }
 
+    private static void showHelp(){
+        System.out.println("<< HELP>>");
+        System.out.println("Alur permainan :");
+        System.out.println("1. Di awal permainan, semua pemain akan mendapatkan 7 buah kartu");
+        System.out.println("2. Sistem akan memberikan 1 kartu acak sebagai kartu awal");
+        System.out.println("3. Pemain yang akan memulai giliran pertama akan diacak.");
+        System.out.println("4. Aturan permainan adalah sebagai berikut :");
+        System.out.println("   a. Pada setiap giliran, pemain boleh mengeluarkan satu atau lebih kartu.");
+        System.out.println("   b. Apabila pemain tidak mengeluarkan kartu, pemain wajib mengambil satu kartu dari deck dengan command Draw.");
+        System.out.println("   c. Apabila kartu yang baru diambil tersebut bisa dikeluarkan, pemain boleh mengeluarkan kartu tersebut");
+        System.out.println("   d. Apabila kartu tersebut tidak dapat dimainkan, maka giliran diselesaikan tanpa mengeluarkan kartu");
+        System.out.println("5. Beberapa jenis kartu memiliki power tertentu yang dapat memengaruhi jalannya permainan, seperti :");
+        System.out.println("   a. Draw 2 (+2) warna Merah/Hijau/Kuning/Biru. (Dikeluarkan sesuai warna top card atau sesama draw)");
+        System.out.println("      Pemain selanjutnya harus mengambil 2 kartu. Apabila pemain tersebut mengeluarkan Draw 2, maka pemain selanjutnya mengambil 4, dan seterusnya. Pemain yang mengambil kartu tambahan kehilangan gilirannya dan dilewati.");
+        System.out.println("   b. Draw 4 (+4). (Dikeluarkan kapanpun)");
+        System.out.println("      Pemain selanjutnya harus mengambil 4 kartu, dan pemain yang mengeluarkan kartu Draw 4 dapat memilih warna yang dapat dimainkan selanjutnya.");
+        System.out.println("   c. Wildcard. (Dikeluarkan kapanpun)");
+        System.out.println("      Pemain dapat memilih warna yang dapat dikeluarkan oleh pemain selanjutnya.");
+        System.out.println("   d. Reverse warna Merah/Hijau/Kuning/Biru. (Dikeluarkan sesuai warna top card atau sesama reverse)");
+        System.out.println("      Urutan pemain dibalik berkali-kali sebanyak kartu reverse yang dikeluarkan");
+        System.out.println("   e. Skip warna Merah/Hijau/Kuning/Biru. (Dikeluarkan sesuai warna top card atau sesama skip)");
+        System.out.println("      Pemain selanjut-selanjutnya dilewati sebanyak kartu skip yang dikeluarkan (kehilangan giliran).");
+        System.out.println("6. Apabila pemain memiliki sisa satu kartu, maka pemain harus melakukan Declare HIJI dalam waktu 3 detik. Apabila tidak, pemain wajib mengambil dua kartu dari deck.");
+        System.out.println("7. Pemain dinyatakan menang apabila kartu yang dipegangnya sudah habis, dan permainan selesai.");
+    }
+
     private static class HijiTimer extends Thread {
         Player player;
         Deck deck;
@@ -503,7 +528,7 @@ public class Main {
 
         // If both are numcards, Same number OR same color
         if (checkCard(cardBefore).equals("NumCard") && checkCard(selectedCard).equals("NumCard")){
-            return cardBefore.getNumber() == selectedCard.getNumber() || cardBefore.getColor().equals(selectedCard.getColor());
+            return cardBefore.getProperty() == selectedCard.getProperty() || cardBefore.getColor().equals(selectedCard.getColor());
         }
 
         // If numcard and Actioncard, Same color only
@@ -522,7 +547,7 @@ public class Main {
 
         // If both are Actioncards, same number OR color
         else if (checkCard(cardBefore).equals("ActionCard") && checkCard(selectedCard).equals("ActionCard")) {
-            return cardBefore.getPower().equals(selectedCard.getPower()) || cardBefore.getColor().equals(selectedCard.getColor());
+            return cardBefore.getProperty().equals(selectedCard.getProperty()) || cardBefore.getColor().equals(selectedCard.getColor());
         }
 
         // If actioncard and wildcard, always true
@@ -533,7 +558,7 @@ public class Main {
 
     //Check type of selected card
     public static String checkCard(Card selectedCard) {
-        int checker =selectedCard.getNumber();
+        int checker =selectedCard.getProperty();
         if (checker==-1){
             if (selectedCard.getColor().equals("Black")) return "WildCard";
             else return "ActionCard";
@@ -547,14 +572,14 @@ public class Main {
         if (check.equals("NumCard")) {
             for (int i=0;i<currentPlayer.getPlayerHand().size();i++){
                 Card card = currentPlayer.getPlayerHand().get(i);
-                if (card.getNumber()==selectedCard.getNumber()){
+                if (card.getProperty()==selectedCard.getProperty()){
                     return true;
                 }
             }
         } else if (check.equals("ActionCard") || check.equals("WildCard")) {
             for (int i=0;i<currentPlayer.getPlayerHand().size();i++){
                 Card card = currentPlayer.getPlayerHand().get(i);
-                if (card.getPower().equals(selectedCard.getPower())){
+                if (card.getProperty().equals(selectedCard.getProperty())){
                     return true;
                 }
             }

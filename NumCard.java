@@ -1,10 +1,10 @@
 //Kartu Angka
 
-public class NumCard implements Card{
+public class NumCard<Property> implements Card{
 	private String color;
-	private int number;
+	private final Property number;
 
-	public NumCard(String color, int number){
+	public NumCard(String color, Property number){
 		this.color = color;
 		this.number = number;
 	}
@@ -17,8 +17,9 @@ public class NumCard implements Card{
 		return color;
 	}
 
-	public int getNumber(){
-		return number;
+	@Override
+	public <Property> Property getProperty() {
+		return (Property) number;
 	}
 
 	public void setColor(String color){

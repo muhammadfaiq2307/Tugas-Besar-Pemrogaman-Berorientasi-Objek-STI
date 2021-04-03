@@ -1,7 +1,6 @@
 import java.util.*;
 public class Player {
     private boolean isGiliran=false;
-//    private boolean gagaldiscard=false;
     private List<Card> playerHand = new ArrayList<Card>();
     private String name;
     private String color;
@@ -34,22 +33,9 @@ public class Player {
     public Card discard(int cardOrder) {
         Card discardCard = playerHand.get(cardOrder);
         playerHand.remove(discardCard);
-        //cek warna kartu
-//        if (discardCard.getColor()== lastCard.getColor()) {
-//            playerHand.remove(discardCard);
-//        }
-//        //cek nomor kartu
-//        else if (discardCard.getNumber() == lastCard.getNumber()) {
-//            playerHand.remove(discardCard);
-//        }
-//        //belum bikin kasus power
-//        else {
-//            System.out.println("Kartu tidak sesuai. Keluarkan kartu lain.");
-//            this.gagaldiscard = true;
-//        }
-
         return (discardCard);
     }
+
     public Card checkHand(int cardOrder){
         return playerHand.get(cardOrder);
     }
@@ -63,13 +49,8 @@ public class Player {
     }
 
     public void draw(Deck deck){
-//        try {
-            playerHand.add(deck.getTop());
-            deck.shuffle();
-//        }
-//        catch (Exception e) {
-//            System.out.println(e);
-//        }
+        playerHand.add(deck.getTop());
+        deck.shuffle();
     }
 
     public String getName(){

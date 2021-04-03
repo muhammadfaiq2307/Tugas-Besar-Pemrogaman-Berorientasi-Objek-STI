@@ -9,8 +9,7 @@ public interface Card{
 	public static final String Purple = "\u001B[35m";
 	public static final String Cyan = "\u001B[36m";
 	public String getColor();
-	public int getNumber();
-	public String getPower();
+	public <Property> Property getProperty();
 	public void setColor(String color);
 	public void printCard();
 	
