@@ -283,7 +283,7 @@ public class Main {
                                 currentPlayer.draw(deck);
                             }
                             draw2Stacks=0;
-                            endTurn=true
+                            endTurn=true;
                             break;
                         }
                         currentPlayer.draw(deck);
