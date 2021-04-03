@@ -1,20 +1,7 @@
 import java.util.*;
 public class Main {
     public static void main (String[] args){
-        //UI
-        System.out.println(Card.Red + "                    $$$$$$$$$$$");
-        System.out.println(Card.Yellow +"  ___  ___  ___"+Card.Red+"$$$$$$$$$"+Card.Yellow+"__"+Card.Red+"$$"+Card.Yellow+"__"+Card.Red+"$$$$$$ ");
-        System.out.println(Card.Yellow+" |\\  \\|\\  \\|\\  \\"+Card.Red+"$$$$$$"+Card.Yellow+"|\\  \\|\\  \\"+Card.Red+"$$");
-        System.out.println(Card.Yellow+" \\ \\  \\_\\  \\ \\  \\"+Card.Red+"$$$$$"+Card.Yellow+"\\ \\  \\ \\  \\"+Card.Red+"$");
-        System.out.println(Card.Yellow+"  \\ \\   "+"__"+Card.Yellow+"  \\ \\  \\"+Card.Red+"$$$$$"+Card.Yellow+"\\ \\  \\ \\  \\");
-        System.out.println(Card.Red+"  $"+Card.Yellow+"\\ \\  \\ \\  \\ \\  \\|\\  \\\\_\\  \\ \\  \\");
-        System.out.println(Card.Red+" $$$"+Card.Yellow+"\\ \\__\\ \\__\\ \\__\\ \\________\\ \\__\\");
-        System.out.println(Card.Red+" $$$$"+Card.Yellow+"\\|__|\\|__|\\|__|\\|________|\\|__|");
-        System.out.println(Card.Red+"$$$$$$$$$$$$$$$$$$$$$$$$  ");                  
-        System.out.println("   $$$$$$$$$$$$      ");                          
-
-        System.out.println(Card.Blue+"      << WELCOME TO HIJI GAME >>");
-        System.out.println("         ===================="+Card.Reset);
+        UI.titleScreen();
 
         // Global variables
         List<Player> playerList = new ArrayList<Player>();
@@ -30,10 +17,7 @@ public class Main {
         int draw4=0;
         boolean chooseColor;
         Player winner = new Player("placeholder","placeholder");
-
         String[] playerColors = {Card.Blue,Card.Red,Card.Green,Card.Cyan,Card.Purple,Card.Yellow};
-
-        
 
         // Total players
         System.out.println("Enter the number of players (2-6):");
@@ -110,7 +94,7 @@ public class Main {
                 System.out.println("Current Card:");
                 lastCard.getTop().printCard();
                 System.out.println("What will "+currentPlayer.getName()+" do?");
-                showIngameMenu();
+                UI.showIngameMenu();
                 int playerCommand = input.nextInt();
 
                 // Safety exit measure
@@ -123,12 +107,20 @@ public class Main {
 
                     // List Cards
                     case 1:
+                        if (hijiTimer.isAlive()) {
+                            UI.hijiWarning();
+                            break;
+                        }
                         System.out.println(currentPlayer.getName() + "'s Deck:");
                         currentPlayer.showDeck();
                         break;
 
                     // Discard
                     case 2:
+                        if (hijiTimer.isAlive()) {
+                            UI.hijiWarning();
+                            break;
+                        }
                         //cant discard
                         if (!canDisc(lastCard.getTop(), currentPlayer) || draw2Stacks>0 || draw4>0 ){
                             System.out.println("Whoops you can't discard");
@@ -234,7 +226,7 @@ public class Main {
                             }
                         }
                         if (chooseColor){
-                            chooseWildColor();
+                            UI.chooseWildColor();
                             int intSelectedColor = input.nextInt();
                             String selectedColor="Black";
                             switch (intSelectedColor){
@@ -259,6 +251,10 @@ public class Main {
 
                     // Draw
                     case 3:
+                        if (hijiTimer.isAlive()) {
+                            UI.hijiWarning();
+                            break;
+                        }
                         if (draw2Stacks>0) {
                             System.out.println("Sorry, you must draw.");
                             System.out.println("Drew "+Card.Red+draw2Stacks*2+" cards."+Card.Reset);
@@ -309,7 +305,7 @@ public class Main {
                                     }
                                 }
                                 if (chooseColor){
-                                    chooseWildColor();
+                                    UI.chooseWildColor();
                                     int intSelectedColor = input.nextInt();
                                     String selectedColor="Black";
                                     switch (intSelectedColor){
@@ -350,6 +346,10 @@ public class Main {
 
                     // List Players
                     case 5:
+                        if (hijiTimer.isAlive()) {
+                            UI.hijiWarning();
+                            break;
+                        }
                         int iterVar = 1;
                         for (Player player : playerList) {
                             System.out.println("Player " + iterVar + ": " + player.getName());
@@ -365,41 +365,21 @@ public class Main {
 
                     // View Player in Turn
                     case 6:
+                        if (hijiTimer.isAlive()) {
+                            UI.hijiWarning();
+                            break;
+                        }
                         System.out.println("It's currently " + Card.Blue + currentPlayer.getName() + Card.Reset + "'s turn.");
                         System.out.println("Next turn: " + Card.Red + playerList.get(nextPlayerOrder).getName() + Card.Reset);
                         break;
 
                     // Help
                     case 7:
-                        showHelp();
-                        break;
-
-                    // Debug: Skip
-                    case 8:
-                        System.out.print("Enter number of cards: ");
-                        skipCards = input.nextInt();
-                        endTurn = true;
-                        break;
-
-                    // Debug: Reverse
-                    case 9:
-                        System.out.print("Enter number of cards: ");
-                        revCards = input.nextInt();
-                        if (revCards % 2 == 1) {
-                            playerRotateDirection *= -1;
+                        if (hijiTimer.isAlive()) {
+                            UI.hijiWarning();
+                            break;
                         }
-                        endTurn = true;
-                        break;
-
-                    // Debug: multidisc
-                    case 10:
-                        if (canMultiDisc(lastCard.getTop(), currentPlayer)){
-                            System.out.println("bisa bro");
-                        } else System.out.println("gabisa bro");
-
-                    // Debug: End Turn
-                    case 0:
-                        endTurn = true;
+                        UI.showHelp();
                         break;
                 }
             }
@@ -432,17 +412,7 @@ public class Main {
             }
         }
 
-        showVictoryScreen(winner);
-    }
-    
-    private static void showIngameMenu(){
-        System.out.println("1. List Cards");
-        System.out.println("2. Discard");
-        System.out.println("3. Draw");
-        System.out.println("4. Declare HIJI");
-        System.out.println("5. List Players");
-        System.out.println("6. View Player in Turn");
-        System.out.println("7. Help");
+        UI.showVictoryScreen(winner);
     }
 
     // Draw 2 cards punishment for late HIJI / declaring when >1
@@ -451,55 +421,6 @@ public class Main {
         player.draw(deck);
         deck.shuffle();
         System.out.println(Card.Red+"2 cards have been automatically added to your hand."+Card.Reset);
-    }
-
-    private static void chooseWildColor(){
-        System.out.println("Choose your color: ");
-        System.out.println("1. "+Card.Red+"Red"+Card.Reset);
-        System.out.println("2. "+Card.Green+"Green"+Card.Reset);
-        System.out.println("3. "+Card.Blue+"Blue"+Card.Reset);
-        System.out.println("4. "+Card.Yellow+"Yellow"+Card.Reset);
-    }
-
-    private static void showVictoryScreen(Player player){
-        System.out.println(Card.Red +" '  "+Card.Yellow+"`  "+Card.Blue+".                        `            "+Card.Red+" .   "+Card.Cyan+"'      . /");
-        System.out.println(Card.Blue+" \\ "+Card.Cyan+"'"+"   /"+"  ."+Card.Red +"  '              "+"` "+Card.Purple+"  .                 ' "+Card.Yellow+" \\"+Card.Blue+" /   `   ");
-        System.out.println(Card.Cyan+"  // '"+Card.Red +" `     "+Card.Cyan+".  ` "+Card.Red +"       `                "+" /          '"+" ` \\\\ "+Card.Cyan+"/   "+Card.Red+".  ");
-        System.out.println(Card.Cyan+"   ` "+Card.Blue+". "+" _     _  ___   __    _  __    _  _______  ______ "+Card.Blue+"  . "+Card.Yellow+" '");
-        System.out.println(Card.Yellow+"    ' "+" | | _ | ||   | |  |  | ||  |  | ||       ||    _ |    "+Card.Purple+"`  . ");
-        System.out.println(Card.Purple+" .    "+" | || || ||   | |   |_| ||   |_| ||    ___||   | ||  "+"/"+Card.Yellow+"  '");
-        System.out.println(Card.Cyan+"    . "+" |       ||   | |       ||       ||   |___ |   |_||_   ");
-        System.out.println(Card.Yellow+"   / "+"  |       ||   | |  _    ||  _    ||    ___||    __  |   "+Card.Yellow+"."+Card.Blue+"   '");
-        System.out.println(Card.Blue+" '  "+"   |   _   ||   | | | |   || | |   ||   |___ |   |  | |"+Card.Blue+" `");
-        System.out.println(" `"+Card.Red +"   . "+"|__| |__||___| |_|  |__||_|  |__||_______||___|  |_|  ' "+Card.Purple+" .");
-        System.out.println(Card.Blue+" ."+Card.Purple+" \\\\ "+Card.Yellow+" '             '                                   "+Card.Cyan+"  // "+Card.Blue+"' "+Card.Reset);
-        System.out.println("         ======================"+player.getName()+"======================");
-    }
-
-    private static void showHelp(){
-        System.out.println("<< HELP>>");
-        System.out.println("Alur permainan :");
-        System.out.println("1. Di awal permainan, semua pemain akan mendapatkan 7 buah kartu");
-        System.out.println("2. Sistem akan memberikan 1 kartu acak sebagai kartu awal");
-        System.out.println("3. Pemain yang akan memulai giliran pertama akan diacak.");
-        System.out.println("4. Aturan permainan adalah sebagai berikut :");
-        System.out.println("   a. Pada setiap giliran, pemain boleh mengeluarkan satu atau lebih kartu.");
-        System.out.println("   b. Apabila pemain tidak mengeluarkan kartu, pemain wajib mengambil satu kartu dari deck dengan command Draw.");
-        System.out.println("   c. Apabila kartu yang baru diambil tersebut bisa dikeluarkan, pemain boleh mengeluarkan kartu tersebut");
-        System.out.println("   d. Apabila kartu tersebut tidak dapat dimainkan, maka giliran diselesaikan tanpa mengeluarkan kartu");
-        System.out.println("5. Beberapa jenis kartu memiliki power tertentu yang dapat memengaruhi jalannya permainan, seperti :");
-        System.out.println("   a. Draw 2 (+2) warna Merah/Hijau/Kuning/Biru. (Dikeluarkan sesuai warna top card atau sesama draw)");
-        System.out.println("      Pemain selanjutnya harus mengambil 2 kartu. Apabila pemain tersebut mengeluarkan Draw 2, maka pemain selanjutnya mengambil 4, dan seterusnya. Pemain yang mengambil kartu tambahan kehilangan gilirannya dan dilewati.");
-        System.out.println("   b. Draw 4 (+4). (Dikeluarkan kapanpun)");
-        System.out.println("      Pemain selanjutnya harus mengambil 4 kartu, dan pemain yang mengeluarkan kartu Draw 4 dapat memilih warna yang dapat dimainkan selanjutnya.");
-        System.out.println("   c. Wildcard. (Dikeluarkan kapanpun)");
-        System.out.println("      Pemain dapat memilih warna yang dapat dikeluarkan oleh pemain selanjutnya.");
-        System.out.println("   d. Reverse warna Merah/Hijau/Kuning/Biru. (Dikeluarkan sesuai warna top card atau sesama reverse)");
-        System.out.println("      Urutan pemain dibalik berkali-kali sebanyak kartu reverse yang dikeluarkan");
-        System.out.println("   e. Skip warna Merah/Hijau/Kuning/Biru. (Dikeluarkan sesuai warna top card atau sesama skip)");
-        System.out.println("      Pemain selanjut-selanjutnya dilewati sebanyak kartu skip yang dikeluarkan (kehilangan giliran).");
-        System.out.println("6. Apabila pemain memiliki sisa satu kartu, maka pemain harus melakukan Declare HIJI dalam waktu 3 detik. Apabila tidak, pemain wajib mengambil dua kartu dari deck.");
-        System.out.println("7. Pemain dinyatakan menang apabila kartu yang dipegangnya sudah habis, dan permainan selesai.");
     }
 
     private static class HijiTimer extends Thread {
