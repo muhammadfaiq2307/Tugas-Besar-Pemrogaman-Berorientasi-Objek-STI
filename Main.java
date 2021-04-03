@@ -119,7 +119,7 @@ public class Main {
                     // Discard
                     case 2:
                         //cant discard
-                        if (!canMultiDisc(lastCard.getTop(), currentPlayer) || draw2Stacks>0){
+                        if (!canDisc(lastCard.getTop(), currentPlayer) || draw2Stacks>0 || draw4>0 ){
                             System.out.println("Whoops you can't discard");
                             break;
                         }
@@ -171,6 +171,7 @@ public class Main {
 //                            endTurn=true;
 //                            System.out.println("Test Case");
                             // TIDAK di end turn disini sampe timernya kelar/declare hiji!
+                                break;
                             }
                             endTurn=true;
                             break;
@@ -252,6 +253,7 @@ public class Main {
 //                            endTurn=true;
 //                            System.out.println("Test Case");
                             // TIDAK di end turn disini sampe timernya kelar/declare hiji!
+                            break;
                         }
                         endTurn=true;
                         break;
@@ -281,15 +283,16 @@ public class Main {
                             break;
                         }
                         currentPlayer.draw(deck);
-                        discardedCard = currentPlayer.discard(currentPlayer.getRemainingCards()-1);
-                        System.out.println("Discarded Card: ");
-                        discardedCard.printCard();
-                        if (isStackable(discardedCard, lastCard.getTop())) {
+                        Card drawedCard = currentPlayer.checkHand(currentPlayer.getRemainingCards()-1);
+                        System.out.println("Card Drawed: ");
+                        drawedCard.printCard();
+                        if (isStackable(drawedCard, lastCard.getTop())) {
                             System.out.println("Mau ngeluarin lagi kartu yang barusan diambil ga lur?: ");
                             System.out.println("1. Iya");
                             System.out.println("2. Tidak");
                             int pilihan = input.nextInt();
                             if (pilihan == 1) {
+                                discardedCard = currentPlayer.discard(currentPlayer.getRemainingCards()-1);
                                 if (discardedCard.getNumber()==-1){
                                     String currentCardPower = discardedCard.getPower();
         
@@ -540,7 +543,7 @@ public class Main {
 
         // If both are Actioncards, same number OR color
         else if (checkCard(cardBefore).equals("ActionCard") && checkCard(selectedCard).equals("ActionCard")) {
-            return cardBefore.getNumber() == selectedCard.getNumber() || cardBefore.getColor().equals(selectedCard.getColor());
+            return cardBefore.getPower().equals(selectedCard.getPower()) || cardBefore.getColor().equals(selectedCard.getColor());
         }
 
         // If actioncard and wildcard, always true
@@ -577,6 +580,16 @@ public class Main {
                 }
             }
         } 
+        return false;
+    }
+    //check if player can discard
+    public static boolean canDisc(Card selectedCard, Player currentPlayer){
+        for (int i=0;i<currentPlayer.getPlayerHand().size();i++){
+            Card card = currentPlayer.getPlayerHand().get(i);
+            if (isStackable(selectedCard, card)){
+                return true;
+            }
+        }
         return false;
     }
 }
