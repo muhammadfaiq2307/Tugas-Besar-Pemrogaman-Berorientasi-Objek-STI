@@ -177,6 +177,7 @@ public class Main {
                                     break;
                                 }
                             }
+                            lastCard.setTop(discardedCard);
                             draw2Stacks = draw2Stacks + timesDiscard;
                             // Eligible for HIJI
                             isPlayerHiji=(currentPlayer.getRemainingCards()==1);
@@ -282,6 +283,7 @@ public class Main {
                                 currentPlayer.draw(deck);
                             }
                             draw2Stacks=0;
+                            endTurn=true
                             break;
                         }
                         currentPlayer.draw(deck);
