@@ -83,24 +83,6 @@ public class Main {
             Player currentPlayer=playerList.get(currentPlayerOrder);
             currentPlayer.setGiliran(true);
 
-            // Draw cards
-            if (draw2Stacks>0){
-                for (int i=0;i<draw2Stacks;i++){
-                    currentPlayer.draw(deck);
-                    currentPlayer.draw(deck);
-                }
-                draw2Stacks=0;
-            }
-            if (draw4>0){
-                for (int i=0;i<draw4;i++){
-                    currentPlayer.draw(deck);
-                    currentPlayer.draw(deck);
-                    currentPlayer.draw(deck);
-                    currentPlayer.draw(deck);
-                }
-                draw4=0;
-            }
-
             // Hiji Flag
             HijiTimer hijiTimer = new HijiTimer(currentPlayer,deck);
             HijiThread hijiThread = new HijiThread(currentPlayer,deck,hijiTimer);
@@ -137,7 +119,7 @@ public class Main {
                     // Discard
                     case 2:
                         //cant discard
-                        if (!canMultiDisc(lastCard.getTop(), currentPlayer)){
+                        if (!canMultiDisc(lastCard.getTop(), currentPlayer) || draw2Stacks>0){
                             System.out.println("Whoops you can't discard");
                             break;
                         }
@@ -283,6 +265,18 @@ public class Main {
                                 currentPlayer.draw(deck);
                             }
                             draw2Stacks=0;
+                            endTurn=true;
+                            break;
+                        }
+                        if (draw4>0) {
+                            System.out.println("Sorry you must draw");
+                            for (int i=0;i<draw4;i++){
+                                currentPlayer.draw(deck);
+                                currentPlayer.draw(deck);
+                                currentPlayer.draw(deck);
+                                currentPlayer.draw(deck);
+                            }
+                            draw4=0;
                             endTurn=true;
                             break;
                         }
