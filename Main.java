@@ -27,7 +27,7 @@ public class Main {
         int playerRotateDirection=1;
         int nextPlayerOrder;
         int draw2Stacks=0;
-        boolean nextDraw4=false;
+        int draw4=0;
         boolean chooseColor;
         Player winner = new Player("placeholder","placeholder");
 
@@ -91,12 +91,14 @@ public class Main {
                 }
                 draw2Stacks=0;
             }
-            if (nextDraw4){
-                currentPlayer.draw(deck);
-                currentPlayer.draw(deck);
-                currentPlayer.draw(deck);
-                currentPlayer.draw(deck);
-                nextDraw4=false;
+            if (draw4>0){
+                for (int i=0;i<draw4;i++){
+                    currentPlayer.draw(deck);
+                    currentPlayer.draw(deck);
+                    currentPlayer.draw(deck);
+                    currentPlayer.draw(deck);
+                }
+                draw4=0;
             }
 
             // Hiji Flag
@@ -134,29 +136,112 @@ public class Main {
 
                     // Discard
                     case 2:
+                        //cant discard
+                        if (!canMultiDisc(lastCard.getTop(), currentPlayer)){
+                            System.out.println("Whoops you can't discard");
+                            break;
+                        }
+                        //must discard draw 2
+                        if (draw2Stacks>0) {
+                            System.out.println("You must discard your draw 2");
+                            System.out.println("Mau ngeluarin yg mana lur? ");
+                            int keluarin = input.nextInt();
+                            Card checkHand = currentPlayer.checkHand(keluarin-1);
+                            while (!isStackable(checkHand, lastCard.getTop()) && checkCard(checkHand).equals("Draw 2")){
+                                System.out.println("Whoops can't discard this");
+                                System.out.print("Mau ngeluarin yg mana lur?: ");
+                                keluarin = input.nextInt();
+                            checkHand = currentPlayer.checkHand(keluarin-1);
+                            }
+                            Card discardedCard = currentPlayer.discard(keluarin - 1);
+                            int timesDiscard = 1;
+                            while (canMultiDisc(discardedCard, currentPlayer)) {
+                                System.out.println("Mau ngeluarin lagi ga lur? ");
+                                System.out.println("1. Iya");
+                                System.out.println("2. Tidak");
+                                int pilihan = input.nextInt();
+                                if (pilihan == 1) {
+                                    currentPlayer.showDeck();
+                                    System.out.print("Mau ngeluarin yg mana lur?: ");
+                                    keluarin = input.nextInt();
+                                    checkHand = currentPlayer.checkHand(keluarin-1);
+                                    while (!isStackable(checkHand, discardedCard) && checkCard(checkHand).equals("Draw 2")){
+                                        System.out.println("Whoops can't discard this");
+                                        System.out.print("Mau ngeluarin yg mana lur?: ");
+                                        keluarin = input.nextInt();
+                                        checkHand = currentPlayer.checkHand(keluarin-1);
+                                    }
+                                    discardedCard = currentPlayer.discard(keluarin - 1);
+                                    timesDiscard++;
+                                } else {
+                                    break;
+                                }
+                            }
+                            draw2Stacks = draw2Stacks + timesDiscard;
+                            // Eligible for HIJI
+                            isPlayerHiji=(currentPlayer.getRemainingCards()==1);
+                            if (isPlayerHiji){
+//                            hijiThread = new HijiThread(currentPlayer,deck,hijiTimer);
+                                hijiThread.start();
+//                            System.out.println(currentPlayer);
+//                            System.out.println("Test Hello");
+//                            endTurn=true;
+//                            System.out.println("Test Case");
+                            // TIDAK di end turn disini sampe timernya kelar/declare hiji!
+                            }
+                            endTurn=true;
+                            break;
+                        }
+                        //normal discard
                         currentPlayer.showDeck();
-                        System.out.print("Mau ngeluarin yg mana lur?: ");
+                        System.out.println("Mau ngeluarin yg mana lur? Ketik -1 to cancel");
                         int keluarin = input.nextInt();
+                        if(keluarin==-1){
+                            break;
+                        }
                         Card checkHand = currentPlayer.checkHand(keluarin-1);
-//                        while (!isStackable(checkHand, lastCard.getTop())){
-//                            System.out.println("Whoops can't discard this");
-//                            System.out.print("Mau ngeluarin yg mana lur?: ");
-//                            keluarin = input.nextInt();
-//                            checkHand = currentPlayer.checkHand(keluarin-1);
-//                        }
+                        while (!isStackable(checkHand, lastCard.getTop())){
+                            System.out.println("Whoops can't discard this");
+                            System.out.print("Mau ngeluarin yg mana lur?: ");
+                            keluarin = input.nextInt();
+                            checkHand = currentPlayer.checkHand(keluarin-1);
+                        }
                         Card discardedCard = currentPlayer.discard(keluarin - 1);
+                        int timesDiscard = 1;
+                        while (canMultiDisc(discardedCard, currentPlayer)) {
+                            System.out.println("Mau ngeluarin lagi ga lur? ");
+                            System.out.println("1. Iya");
+                            System.out.println("2. Tidak");
+                            int pilihan = input.nextInt();
+                            if (pilihan == 1) {
+                                currentPlayer.showDeck();
+                                System.out.print("Mau ngeluarin yg mana lur?: ");
+                                keluarin = input.nextInt();
+                                checkHand = currentPlayer.checkHand(keluarin-1);
+                                while (!isStackable(checkHand, discardedCard)){
+                                    System.out.println("Whoops can't discard this");
+                                    System.out.print("Mau ngeluarin yg mana lur?: ");
+                                    keluarin = input.nextInt();
+                                    checkHand = currentPlayer.checkHand(keluarin-1);
+                                }
+                                discardedCard = currentPlayer.discard(keluarin - 1);
+                                timesDiscard++;
+                            } else {
+                                break;
+                            }
+                        }
                         if (discardedCard.getNumber()==-1){
                             String currentCardPower = discardedCard.getPower();
 
                             switch (currentCardPower) {
-                                case "Skip" -> skipCards++;
-                                case "Reverse" -> revCards++;
-                                case "Draw 2" -> draw2Stacks++;
-                                case "Wild Draw 4" -> {
-                                    nextDraw4 = true;
+                                case "Skip" : skipCards = timesDiscard;break;
+                                case "Reverse" : revCards = timesDiscard;break;
+                                case "Draw 2" : draw2Stacks = timesDiscard;break;
+                                case "Wild Draw 4" :
+                                    draw4 = timesDiscard;
                                     chooseColor = true;
-                                }
-                                case "Wild Color" -> chooseColor = true;
+                                break;
+                                case "Wild Color" : chooseColor = true;break;
                             }
                         }
                         if (chooseColor){
@@ -164,10 +249,10 @@ public class Main {
                             int intSelectedColor = input.nextInt();
                             String selectedColor="Black";
                             switch (intSelectedColor){
-                                case 1 -> selectedColor="Red";
-                                case 2 -> selectedColor="Green";
-                                case 3 -> selectedColor="Blue";
-                                case 4 -> selectedColor="Yellow";
+                                case 1 : selectedColor="Red";break;
+                                case 2 : selectedColor="Green";break;
+                                case 3 : selectedColor="Blue";break;
+                                case 4 : selectedColor="Yellow";break;
                             }
                             discardedCard.setColor(selectedColor);
                             chooseColor=false;
@@ -185,12 +270,62 @@ public class Main {
 //                            System.out.println("Test Case");
                             // TIDAK di end turn disini sampe timernya kelar/declare hiji!
                         }
+                        endTurn=true;
                         break;
 
                     // Draw
                     case 3:
+                        if (draw2Stacks>0) {
+                            System.out.println("Sorry you must draw");
+                            for (int i=0;i<draw2Stacks;i++){
+                                currentPlayer.draw(deck);
+                                currentPlayer.draw(deck);
+                            }
+                            draw2Stacks=0;
+                            break;
+                        }
                         currentPlayer.draw(deck);
+                        discardedCard = currentPlayer.discard(currentPlayer.getRemainingCards()-1);
+                        System.out.println("Discarded Card: ");
+                        discardedCard.printCard();
+                        if (isStackable(discardedCard, lastCard.getTop())) {
+                            System.out.println("Mau ngeluarin lagi kartu yang barusan diambil ga lur?: ");
+                            System.out.println("1. Iya");
+                            System.out.println("2. Tidak");
+                            int pilihan = input.nextInt();
+                            if (pilihan == 1) {
+                                if (discardedCard.getNumber()==-1){
+                                    String currentCardPower = discardedCard.getPower();
+        
+                                    switch (currentCardPower) {
+                                        case "Skip" : skipCards++;break;
+                                        case "Reverse" : revCards++;break;
+                                        case "Draw 2" : draw2Stacks++;break;
+                                        case "Wild Draw 4" :
+                                            draw4++;
+                                            chooseColor = true;
+                                        break;
+                                        case "Wild Color" : chooseColor = true;break;
+                                    }
+                                }
+                                if (chooseColor){
+                                    chooseWildColor();
+                                    int intSelectedColor = input.nextInt();
+                                    String selectedColor="Black";
+                                    switch (intSelectedColor){
+                                        case 1 : selectedColor="Red";break;
+                                        case 2 : selectedColor="Green";break;
+                                        case 3 : selectedColor="Blue";break;
+                                        case 4 : selectedColor="Yellow";break;
+                                    }
+                                    discardedCard.setColor(selectedColor);
+                                    chooseColor=false;
+                                }
+                                lastCard.setTop(discardedCard);
+                            }
+                        }
                         deck.shuffle();
+                        endTurn = true;
                         break;
 
                     // Declare Hiji
@@ -296,7 +431,6 @@ public class Main {
     }
     
     private static void showIngameMenu(){
-        System.out.println("0. <DEBUG> End Turn");
         System.out.println("1. List Cards");
         System.out.println("2. Discard");
         System.out.println("3. Draw");
@@ -304,8 +438,6 @@ public class Main {
         System.out.println("5. List Players");
         System.out.println("6. View Player in Turn");
         System.out.println("7. Help");
-        System.out.println("8. <DEBUG> Skip");
-        System.out.println("9. <DEBUG> Reverse");
     }
 
     // Draw 2 cards punishment for late HIJI / declaring when >1
@@ -433,12 +565,22 @@ public class Main {
 
     //Check if player can multiple discard based on first card drawed
     public static boolean canMultiDisc(Card selectedCard,Player currentPlayer){
-        for (int i=0;i<currentPlayer.getPlayerHand().size();i++){
-            Card card = currentPlayer.getPlayerHand().get(i);
-            if (isStackable(card, selectedCard)){
-                return true;
+        String check = checkCard(selectedCard);
+        if (check.equals("NumCard")) {
+            for (int i=0;i<currentPlayer.getPlayerHand().size();i++){
+                Card card = currentPlayer.getPlayerHand().get(i);
+                if (card.getNumber()==selectedCard.getNumber()){
+                    return true;
+                }
             }
-        }
+        } else if (check.equals("ActionCard") || check.equals("WildCard")) {
+            for (int i=0;i<currentPlayer.getPlayerHand().size();i++){
+                Card card = currentPlayer.getPlayerHand().get(i);
+                if (card.getPower().equals(selectedCard.getPower())){
+                    return true;
+                }
+            }
+        } 
         return false;
     }
 }

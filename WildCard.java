@@ -25,10 +25,10 @@ public class WildCard extends PowCard{
 		//			default :
 		//				System.out.print(Black);break;
 		switch (color) {
-			case "Red" -> System.out.print(Red);
-			case "Blue" -> System.out.print(Blue);
-			case "Yellow" -> System.out.print(Yellow);
-			case "Green" -> System.out.print(Green);
+			case "Red" : System.out.print(Red);break;
+			case "Blue" : System.out.print(Blue);break;
+			case "Yellow" : System.out.print(Yellow);break;
+			case "Green" : System.out.print(Green);break;
 		}
 		System.out.print(power);
 		System.out.println(Reset);
