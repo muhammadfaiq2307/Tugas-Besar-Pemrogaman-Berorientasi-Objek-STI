@@ -3,10 +3,10 @@ public class Main {
     public static <Property> void main (String[] args){
         Scanner input = new Scanner(System.in);
         UI.titleScreen();
-        int startGame = input.nextInt();
-        while (startGame!=1){
-            System.out.println("Please input the right number!");
-            startGame = input.nextInt();
+        String startGame=input.next();
+        while (!startGame.equals("1")){
+            System.out.println("Please enter 1!");
+            startGame = input.next();
         }
 
 
@@ -29,11 +29,14 @@ public class Main {
 
 
         // Total players
-        System.out.println("Enter the number of players (2-6):");
-        int totalPlayers = input.nextInt();
+        int totalPlayers = -1;
         while (totalPlayers>6 || totalPlayers<2){
-            System.out.println("Players must be between 2-6!");
+            System.out.println("Enter the number of players (2-6):");
+            try{
             totalPlayers=input.nextInt();
+            } catch(InputMismatchException e){
+                input.next();
+            }
         }
         // exception for wrong input ...
         System.out.println("Registered "+totalPlayers+" players.");
@@ -104,7 +107,17 @@ public class Main {
                 lastCard.getTop().printCard();
                 System.out.println("What will "+currentPlayer.getName()+" do?");
                 UI.showIngameMenu();
-                int playerCommand = input.nextInt();
+
+                // To ensure player command input is an integer
+                int playerCommand = -1;
+                while (playerCommand>7 || playerCommand<1){
+                    System.out.println("Input must be between 1-7!");
+                    try{
+                    playerCommand=input.nextInt();
+                    } catch(InputMismatchException e){
+                        input.next();
+                    }
+                }
 
                 // Safety exit measure
                 if (isPlayerHiji && !hijiTimer.isAlive()) {
@@ -137,35 +150,104 @@ public class Main {
                         }
                         //must discard draw 2
                         if (draw2Stacks>0) {
+                            //if didnt have +2
+                            int banyakKartuDraw2 = 0;
+                            for (int i=0;i<currentPlayer.getPlayerHand().size();i++){
+                                Card card = currentPlayer.getPlayerHand().get(i);
+                                if (card.getProperty().equals("Draw 2")){
+                                   banyakKartuDraw2++; 
+                                }
+                            }
+                            if (banyakKartuDraw2==0) {
+                                System.out.println("Whoops you can't discard");
+                                break;
+                            }
+                            //if have +2
                             System.out.println("You must discard your draw 2");
                             currentPlayer.showDeck();
-                            System.out.println("Mau ngeluarin yg mana lur? ");
-                            int keluarin = input.nextInt();
+                            System.out.println("Select card to discard: ");
+
+
+                            
+                            int keluarin = -2;
+                            while (keluarin>currentPlayer.getRemainingCards() || keluarin<1){
+                                System.out.println("Select card to discard: ");
+                                try{
+                                    keluarin=input.nextInt();
+                                } catch(InputMismatchException e){
+                                    input.next();
+                                }
+                            }
+
+
+
                             Card checkHand = currentPlayer.checkHand(keluarin-1);
                             while (!(checkCard(checkHand).equals("ActionCard") &&
                                     checkHand.getProperty() instanceof String && checkHand.getProperty().equals("Draw 2"))){
                                 System.out.println("Whoops can't discard this");
-                                System.out.print("Mau ngeluarin yg mana lur?: ");
-                                keluarin = input.nextInt();
+
+
+                                keluarin = -2;
+                                while (keluarin>currentPlayer.getRemainingCards() || keluarin<1){
+                                    System.out.println("Select card to discard: ");
+                                    try{
+                                        keluarin=input.nextInt();
+                                    } catch(InputMismatchException e){
+                                        input.next();
+                                    }
+                                }
+
+
                                 checkHand = currentPlayer.checkHand(keluarin-1);
                             }
                             Card discardedCard = currentPlayer.discard(keluarin - 1);
                             int timesDiscard = 1;
                             while (canMultiDisc(discardedCard, currentPlayer)) {
-                                System.out.println("Mau ngeluarin lagi ga lur? ");
-                                System.out.println("1. Iya");
-                                System.out.println("2. Tidak");
-                                int pilihan = input.nextInt();
+
+                                int pilihan = -1;
+                                while (pilihan>2 || pilihan<1){
+                                    System.out.println("Do you want to discard again? ");
+                                    System.out.println("1. Yes");
+                                    System.out.println("2. No");
+                                    try{
+                                        pilihan=input.nextInt();
+                                    } catch(InputMismatchException e){
+                                        input.next();
+                                    }
+                                }
+
                                 if (pilihan == 1) {
                                     currentPlayer.showDeck();
-                                    System.out.print("Mau ngeluarin yg mana lur?: ");
-                                    keluarin = input.nextInt();
+
+
+                                    keluarin = -2;
+                                    while (keluarin>currentPlayer.getRemainingCards() || keluarin<1){
+                                        System.out.println("Select card to discard: ");
+                                        try{
+                                            keluarin=input.nextInt();
+                                        } catch(InputMismatchException e){
+                                            input.next();
+                                        }
+                                    }
+
+
                                     checkHand = currentPlayer.checkHand(keluarin-1);
                                     while (!(checkCard(checkHand).equals("ActionCard") &&
-                                            checkHand.getProperty() instanceof String && checkHand.getProperty().equals("Draw 2"))){
+                                            checkHand.getProperty() instanceof String && checkHand.getProperty().equals("Draw 2") && checkHand.getColor().equals(discardedCard.getColor()))){
                                         System.out.println("Whoops can't discard this");
-                                        System.out.print("Mau ngeluarin yg mana lur?: ");
-                                        keluarin = input.nextInt();
+
+
+                                        keluarin = -2;
+                                        while (keluarin>currentPlayer.getRemainingCards() || keluarin<1){
+                                            System.out.println("Select card to discard: ");
+                                            try{
+                                                keluarin=input.nextInt();
+                                            } catch(InputMismatchException e){
+                                                input.next();
+                                            }
+                                        }
+
+
                                         checkHand = currentPlayer.checkHand(keluarin-1);
                                     }
                                     discardedCard = currentPlayer.discard(keluarin - 1);
@@ -187,40 +269,89 @@ public class Main {
                         }
                         //normal discard
                         currentPlayer.showDeck();
-                        System.out.println("Mau ngeluarin yg mana lur? Ketik -1 to cancel");
-                        int keluarin = input.nextInt();
-                        if(keluarin==-1){
-                            break;
+
+
+                        int keluarin = -2;
+                        while (keluarin>currentPlayer.getRemainingCards() || keluarin<1){
+                            System.out.println("Select card to discard: ");
+                            try{
+                                keluarin=input.nextInt();
+                            } catch(InputMismatchException e){
+                                input.next();
+                            }
                         }
+
+
                         Card checkHand = currentPlayer.checkHand(keluarin-1);
                         while (!isStackable(checkHand, lastCard.getTop())){
                             System.out.println("Whoops can't discard this");
-                            System.out.print("Mau ngeluarin yg mana lur?: ");
-                            keluarin = input.nextInt();
+
+
+                            keluarin = -2;
+                            while (keluarin>currentPlayer.getRemainingCards() || keluarin<1){
+                                System.out.println("Select card to discard: ");
+                                try{
+                                    keluarin=input.nextInt();
+                                } catch(InputMismatchException e){
+                                    input.next();
+                                }
+                            }
+
+
                             checkHand = currentPlayer.checkHand(keluarin-1);
                         }
                         Card discardedCard = currentPlayer.discard(keluarin - 1);
                         int timesDiscard = 1;
                         while (canMultiDisc(discardedCard, currentPlayer)) {
-                            System.out.println("Mau ngeluarin lagi ga lur? ");
-                            System.out.println("1. Iya");
-                            System.out.println("2. Tidak");
-                            int pilihan = input.nextInt();
+                            
+                            int pilihan = -1;
+                            while (pilihan>2 || pilihan<1){
+                                System.out.println("Do you want to discard again? ");
+                                System.out.println("1. Yes");
+                                System.out.println("2. No");
+                                try{
+                                    pilihan=input.nextInt();
+                                } catch(InputMismatchException e){
+                                    input.next();
+                                }
+                            }
+
                             if (pilihan == 1) {
                                 currentPlayer.showDeck();
-                                System.out.print("Mau ngeluarin yg mana lur?: ");
-                                keluarin = input.nextInt();
+
+
+                                keluarin = -2;
+                                while (keluarin>currentPlayer.getRemainingCards() || keluarin<1){
+                                    System.out.println("Select card to discard: ");
+                                    try{
+                                        keluarin=input.nextInt();
+                                    } catch(InputMismatchException e){
+                                        input.next();
+                                    }
+                                }
+
+
                                 checkHand = currentPlayer.checkHand(keluarin-1);
                                 while (!
                                         ((checkHand.getProperty() instanceof Integer && discardedCard.getProperty() instanceof Integer &&
-                                            checkHand.getProperty()==discardedCard.getProperty())
+                                            checkHand.getProperty()==discardedCard.getProperty() && checkHand.getColor().equals(discardedCard.getColor()))
                                             ||
                                         (checkHand.getProperty() instanceof String && discardedCard.getProperty() instanceof String &&
-                                            checkHand.getProperty().equals(discardedCard.getProperty())))
+                                            checkHand.getProperty().equals(discardedCard.getProperty()) && checkHand.getColor().equals(discardedCard.getColor())))
                                 ){
                                     System.out.println("Whoops can't discard this");
-                                    System.out.print("Mau ngeluarin yg mana lur?: ");
-                                    keluarin = input.nextInt();
+
+
+                                    keluarin = -2;
+                                    while (keluarin>currentPlayer.getRemainingCards() || keluarin<1){
+                                        System.out.println("Select card to discard: ");
+                                        try{
+                                            keluarin=input.nextInt();
+                                        } catch(InputMismatchException e){
+                                            input.next();
+                                        }
+                                    }
+
                                     checkHand = currentPlayer.checkHand(keluarin-1);
                                 }
                                 discardedCard = currentPlayer.discard(keluarin - 1);
@@ -244,8 +375,17 @@ public class Main {
                             }
                         }
                         if (chooseColor){
-                            UI.chooseWildColor();
-                            int intSelectedColor = input.nextInt();
+
+                            int intSelectedColor = -1;
+                            while (intSelectedColor>4 || intSelectedColor<1){
+                                UI.chooseWildColor();
+                                try{
+                                    intSelectedColor=input.nextInt();
+                                } catch(InputMismatchException e){
+                                    input.next();
+                                }
+                            }
+
                             String selectedColor="Black";
                             switch (intSelectedColor){
                                 case 1 : selectedColor="Red";break;
@@ -302,10 +442,19 @@ public class Main {
                         System.out.println("Card Drawed: ");
                         drawedCard.printCard();
                         if (isStackable(drawedCard, lastCard.getTop())) {
-                            System.out.println("Mau ngeluarin lagi kartu yang barusan diambil ga lur?: ");
-                            System.out.println("1. Iya");
-                            System.out.println("2. Tidak");
-                            int pilihan = input.nextInt();
+
+                            int pilihan = -1;
+                            while (pilihan>2 || pilihan<1){
+                                System.out.println("You can discard your recent card, do you want to discard it? ");
+                                System.out.println("1. Yes");
+                                System.out.println("2. No");
+                                try{
+                                    pilihan=input.nextInt();
+                                } catch(InputMismatchException e){
+                                    input.next();
+                                }
+                            }
+
                             if (pilihan == 1) {
                                 discardedCard = currentPlayer.discard(currentPlayer.getRemainingCards()-1);
                                 if (discardedCard.getProperty() instanceof String){
@@ -323,8 +472,17 @@ public class Main {
                                     }
                                 }
                                 if (chooseColor){
-                                    UI.chooseWildColor();
-                                    int intSelectedColor = input.nextInt();
+
+                                    int intSelectedColor = -1;
+                                    while (intSelectedColor>4 || intSelectedColor<1){
+                                        UI.chooseWildColor();
+                                        try{
+                                            intSelectedColor=input.nextInt();
+                                        } catch(InputMismatchException e){
+                                            input.next();
+                                        }
+                                    }
+
                                     String selectedColor="Black";
                                     switch (intSelectedColor){
                                         case 1 : selectedColor="Red";break;
@@ -509,29 +667,19 @@ public class Main {
 
     //Check if player can multiple discard based on first card drawed
     public static boolean canMultiDisc(Card selectedCard,Player currentPlayer){
-        String check = checkCard(selectedCard);
-        if (check.equals("NumCard")) {
-            for (int i=0;i<currentPlayer.getPlayerHand().size();i++){
-                Card card = currentPlayer.getPlayerHand().get(i);
-                if (card.getProperty()==selectedCard.getProperty()){
-                    return true;
-                }
+        for (int i=0;i<currentPlayer.getPlayerHand().size();i++){
+            Card card = currentPlayer.getPlayerHand().get(i);
+            if (card.getProperty()==selectedCard.getProperty() && card.getColor().equals(selectedCard.getColor())){
+                return true;
             }
-        } else if (check.equals("ActionCard") || check.equals("WildCard")) {
-            for (int i=0;i<currentPlayer.getPlayerHand().size();i++){
-                Card card = currentPlayer.getPlayerHand().get(i);
-                if (card.getProperty().equals(selectedCard.getProperty())){
-                    return true;
-                }
-            }
-        } 
+        }
         return false;
     }
     //check if player can discard
     public static boolean canDisc(Card selectedCard, Player currentPlayer){
         for (int i=0;i<currentPlayer.getPlayerHand().size();i++){
             Card card = currentPlayer.getPlayerHand().get(i);
-            if (isStackable(selectedCard, card)){
+            if (isStackable(card, selectedCard)){
                 return true;
             }
         }
