@@ -29,5 +29,5 @@ Cara memainkan:
 6. Apabila pemain memiliki sisa satu kartu, maka pemain harus melakukan Declare HIJI dalam waktu 3 detik. Apabila tidak, pemain wajib mengambil dua kartu dari deck.
 7. Pemain dinyatakan menang apabila kartu yang dipegangnya sudah habis, dan permainan selesai.
 
-CATATAN
+CATATAN:
 Jika pada cmd tulisan tidak ada warnanya atau warna tidak ter-render, maka anda harus mendownload windows terminal pada microsoft store dan membuka cmd dari aplikasi tersebut
