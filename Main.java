@@ -75,6 +75,7 @@ public class Main {
             boolean endTurn=false;
             skipCards=0;
             int revCards=0;
+            boolean justReversed=false;
             chooseColor=false;
 
             // Initialize current player
@@ -425,7 +426,7 @@ public class Main {
                         }
                         if (draw4>0) {
                             System.out.println("Sorry, you must draw.");
-                            System.out.println("Drew +"+Card.Red+draw4*4+" cards.");
+                            System.out.println("Drew "+Card.Red+draw4*4+" cards.");
                             for (int i=0;i<draw4;i++){
                                 currentPlayer.draw(deck);
                                 currentPlayer.draw(deck);
@@ -560,12 +561,18 @@ public class Main {
             }
             if (revCards % 2 == 1) {
                 playerRotateDirection *= -1;
+                justReversed = true;
             }
             // Set the next player's turn.
             // Condition 1: Normal rotation
             if (playerRotateDirection==1){
-                // Modulo function as in Circular Buffer.
-                currentPlayerOrder = (nextPlayerOrder+(skipCards))% totalPlayers;
+                if (!justReversed){
+                    // Modulo function as in Circular Buffer.
+                    currentPlayerOrder = (nextPlayerOrder+(skipCards))% totalPlayers;
+                }
+                else {
+                    currentPlayerOrder = (currentPlayerOrder+skipCards+1)% totalPlayers;
+                }
             }
             // Condition 2: Reverse rotation
             else {
