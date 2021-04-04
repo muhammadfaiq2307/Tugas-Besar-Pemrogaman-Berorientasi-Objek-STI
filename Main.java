@@ -1,6 +1,6 @@
 import java.util.*;
 public class Main {
-    public static void main (String[] args){
+    public static <Property> void main (String[] args){
         Scanner input = new Scanner(System.in);
         UI.titleScreen();
         int startGame = input.nextInt();
@@ -131,21 +131,23 @@ public class Main {
                             break;
                         }
                         //cant discard
-                        if (!canDisc(lastCard.getTop(), currentPlayer) || draw2Stacks>0 || draw4>0 ){
+                        if (!canDisc(lastCard.getTop(), currentPlayer) || draw4>0 ){
                             System.out.println("Whoops you can't discard");
                             break;
                         }
                         //must discard draw 2
                         if (draw2Stacks>0) {
                             System.out.println("You must discard your draw 2");
+                            currentPlayer.showDeck();
                             System.out.println("Mau ngeluarin yg mana lur? ");
                             int keluarin = input.nextInt();
                             Card checkHand = currentPlayer.checkHand(keluarin-1);
-                            while (!isStackable(checkHand, lastCard.getTop()) && checkCard(checkHand).equals("Draw 2")){
+                            while (!(checkCard(checkHand).equals("ActionCard") &&
+                                    checkHand.getProperty() instanceof String && checkHand.getProperty().equals("Draw 2"))){
                                 System.out.println("Whoops can't discard this");
                                 System.out.print("Mau ngeluarin yg mana lur?: ");
                                 keluarin = input.nextInt();
-                            checkHand = currentPlayer.checkHand(keluarin-1);
+                                checkHand = currentPlayer.checkHand(keluarin-1);
                             }
                             Card discardedCard = currentPlayer.discard(keluarin - 1);
                             int timesDiscard = 1;
@@ -159,7 +161,8 @@ public class Main {
                                     System.out.print("Mau ngeluarin yg mana lur?: ");
                                     keluarin = input.nextInt();
                                     checkHand = currentPlayer.checkHand(keluarin-1);
-                                    while (!isStackable(checkHand, discardedCard) && checkCard(checkHand).equals("Draw 2")){
+                                    while (!(checkCard(checkHand).equals("ActionCard") &&
+                                            checkHand.getProperty() instanceof String && checkHand.getProperty().equals("Draw 2"))){
                                         System.out.println("Whoops can't discard this");
                                         System.out.print("Mau ngeluarin yg mana lur?: ");
                                         keluarin = input.nextInt();
@@ -208,7 +211,13 @@ public class Main {
                                 System.out.print("Mau ngeluarin yg mana lur?: ");
                                 keluarin = input.nextInt();
                                 checkHand = currentPlayer.checkHand(keluarin-1);
-                                while (!(checkHand.getProperty()==discardedCard.getProperty() && checkHand.getProperty().equals(discardedCard.getProperty()))){
+                                while (!
+                                        ((checkHand.getProperty() instanceof Integer && discardedCard.getProperty() instanceof Integer &&
+                                            checkHand.getProperty()==discardedCard.getProperty())
+                                            ||
+                                        (checkHand.getProperty() instanceof String && discardedCard.getProperty() instanceof String &&
+                                            checkHand.getProperty().equals(discardedCard.getProperty())))
+                                ){
                                     System.out.println("Whoops can't discard this");
                                     System.out.print("Mau ngeluarin yg mana lur?: ");
                                     keluarin = input.nextInt();
@@ -491,7 +500,7 @@ public class Main {
 
     //Check type of selected card
     public static String checkCard(Card selectedCard) {
-        if (selectedCard.getProperty() instanceof Integer){
+        if (selectedCard.getProperty() instanceof String){
             if (selectedCard.getColor().equals("Black")) return "WildCard";
             else return "ActionCard";
         }

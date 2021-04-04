@@ -98,8 +98,8 @@ public class Deck {
 
     //untuk mengambil 1 kartu dari deck.
     public Card getTop() {
-        if (deck.size()==0){
-//            throw new Exception();
+        if (isDeckEmpty()){
+            createCards();
         }
         return deck.remove(0);
     }
