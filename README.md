@@ -4,6 +4,7 @@ HIJI, UNO look-alike game implemented on Java.
 Cara menjalankan program:
 1. Compile semua file di folder src dengan perintah javac *.java
 2. Jalankan java Main di direktori yang sama dengan folder src
+3. Jika pada cmd tulisan tidak ada warnanya atau warna tidak ter-render, maka anda harus mendownload windows terminal pada microsoft store dan membuka cmd dari aplikasi tersebut
 
 Cara memainkan:
 1. Di awal permainan, semua pemain akan mendapatkan 7 buah kartu
@@ -29,5 +30,4 @@ Cara memainkan:
 6. Apabila pemain memiliki sisa satu kartu, maka pemain harus melakukan Declare HIJI dalam waktu 3 detik. Apabila tidak, pemain wajib mengambil dua kartu dari deck.
 7. Pemain dinyatakan menang apabila kartu yang dipegangnya sudah habis, dan permainan selesai.
 
-CATATAN:
-Jika pada cmd tulisan tidak ada warnanya atau warna tidak ter-render, maka anda harus mendownload windows terminal pada microsoft store dan membuka cmd dari aplikasi tersebut
+
