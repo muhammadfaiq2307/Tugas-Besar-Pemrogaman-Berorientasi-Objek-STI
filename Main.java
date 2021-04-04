@@ -165,7 +165,6 @@ public class Main {
                             //if have +2
                             System.out.println("You must discard your draw 2");
                             currentPlayer.showDeck();
-                            System.out.println("Select card to discard: ");
 
 
                             
