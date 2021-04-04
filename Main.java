@@ -104,6 +104,45 @@ public class Main {
                     endTurn=true;
                     break;
                 }
+
+                //autoskipturn if didnt have +2 and must draw +2
+                if (draw2Stacks>0) {
+                    int banyakKartuDraw2 = 0;
+                    for (int i=0;i<currentPlayer.getPlayerHand().size();i++){
+                        Card card = currentPlayer.getPlayerHand().get(i);
+                        if (card.getProperty().equals("Draw 2")){
+                            banyakKartuDraw2++; 
+                        }
+                    }
+                    if (banyakKartuDraw2==0) {
+                        System.out.println("Sorry " + currentPlayer.getName() + ", you must draw.");
+                        System.out.println("Drew "+Card.Red+draw2Stacks*2+" cards."+Card.Reset);
+                        for (int i=0;i<draw2Stacks;i++){
+                            currentPlayer.draw(deck);
+                            currentPlayer.draw(deck);
+                        }
+                        draw2Stacks=0;
+                        endTurn=true;
+                        break;
+                    }
+                }
+
+                //autoskipturn if must draw +4
+                if (draw4>0) {
+                    System.out.println("Sorry " + currentPlayer.getName() + ", you must draw.");
+                    System.out.println("Drew "+Card.Red+draw4*4+" cards.");
+                    for (int i=0;i<draw4;i++){
+                        currentPlayer.draw(deck);
+                        currentPlayer.draw(deck);
+                        currentPlayer.draw(deck);
+                        currentPlayer.draw(deck);
+                    }
+                    draw4=0;
+                    endTurn=true;
+                    break;
+                }
+
+
                 System.out.println("Current Card:");
                 lastCard.getTop().printCard();
                 System.out.println("What will "+currentPlayer.getName()+" do?");
@@ -151,19 +190,6 @@ public class Main {
                         }
                         //must discard draw 2
                         if (draw2Stacks>0) {
-                            //if didnt have +2
-                            int banyakKartuDraw2 = 0;
-                            for (int i=0;i<currentPlayer.getPlayerHand().size();i++){
-                                Card card = currentPlayer.getPlayerHand().get(i);
-                                if (card.getProperty().equals("Draw 2")){
-                                   banyakKartuDraw2++; 
-                                }
-                            }
-                            if (banyakKartuDraw2==0) {
-                                System.out.println("Whoops you can't discard");
-                                break;
-                            }
-                            //if have +2
                             System.out.println("You must discard your draw 2");
                             currentPlayer.showDeck();
 
@@ -411,30 +437,6 @@ public class Main {
                     case 3:
                         if (hijiTimer.isAlive()) {
                             UI.hijiWarning();
-                            break;
-                        }
-                        if (draw2Stacks>0) {
-                            System.out.println("Sorry, you must draw.");
-                            System.out.println("Drew "+Card.Red+draw2Stacks*2+" cards."+Card.Reset);
-                            for (int i=0;i<draw2Stacks;i++){
-                                currentPlayer.draw(deck);
-                                currentPlayer.draw(deck);
-                            }
-                            draw2Stacks=0;
-                            endTurn=true;
-                            break;
-                        }
-                        if (draw4>0) {
-                            System.out.println("Sorry, you must draw.");
-                            System.out.println("Drew "+Card.Red+draw4*4+" cards.");
-                            for (int i=0;i<draw4;i++){
-                                currentPlayer.draw(deck);
-                                currentPlayer.draw(deck);
-                                currentPlayer.draw(deck);
-                                currentPlayer.draw(deck);
-                            }
-                            draw4=0;
-                            endTurn=true;
                             break;
                         }
                         currentPlayer.draw(deck);
